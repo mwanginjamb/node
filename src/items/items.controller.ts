@@ -1,11 +1,20 @@
 import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
 import { CreateItemDto } from './dto/create-item.dto';
+import { ItemsService } from './items.service';
+import { Item } from './interfaces/item.interface';
+
 
 @Controller('items')
 export class ItemsController {
+
+  constructor(private readonly itemSvc: ItemsService) {
+
+  }
+
+
   @Get()
-  findAll(): string {
-    return 'Get all items';
+  findAll(): Item[] {
+    return this.itemSvc.Items;
   }
 
   @Post()
@@ -16,8 +25,8 @@ export class ItemsController {
   // Get One Record
 
   @Get(':id')
-  findOne(@Param('id') id): string {
-    return `Item ${id}`;
+  findOne(@Param('id') id): Item {
+    return this.itemSvc.fetchItem(id);
   }
 
   // A more verbose version of passing params
