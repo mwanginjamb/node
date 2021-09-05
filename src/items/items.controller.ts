@@ -1,7 +1,10 @@
+/* eslint-disable prettier/prettier */
+// eslint-disable-next-line prettier/prettier
 import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
 import { CreateItemDto } from './dto/create-item.dto';
 import { ItemsService } from './items.service';
 import { Item } from './interfaces/item.interface';
+
 
 
 @Controller('items')
@@ -13,31 +16,34 @@ export class ItemsController {
 
 
   @Get()
-  findAll(): Item[] {
-    return this.itemSvc.Items;
+  async findAll(): Promise<Item[]> {
+    return this.itemSvc.Items()
   }
 
+   // Get One Record
+
+   @Get(':id')
+   async findOne(@Param('id') id): Promise<Item> {
+     return this.itemSvc.fetchItem(id);
+   }
+
+
+   // A dto stands for a data transfer object -  basically a model/schema
   @Post()
-  create(@Body() item: CreateItemDto): string {
-    return `Name: ${item.name} Desc is ${item.description}`;
-  }
-
-  // Get One Record
-
-  @Get(':id')
-  findOne(@Param('id') id): Item {
-    return this.itemSvc.fetchItem(id);
+   create(@Body() itemDto: CreateItemDto): Promise<Item> {
+    return this.itemSvc.create(itemDto);
   }
 
   // A more verbose version of passing params
 
   @Put(':id')
-  update(@Param() param, @Body() Item: CreateItemDto): string {
-    return `Updated record ${param.id}  Whose Name is ${Item.name}`;
+   update(@Param() param, @Body() ItemDto: CreateItemDto): Promise<Item> {
+   return  this.itemSvc.update(param.id, ItemDto);
   }
 
+  // A cleaner way to pass params
   @Delete(':id')
-  delete(@Param('id') id): string {
-    return `Deleted record: ${id}`;
+   delete(@Param('id') id): Promise<Item> {
+    return  this.itemSvc.delete(id);
   }
 }
